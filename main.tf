@@ -54,30 +54,33 @@ module "alb" {
 
   security_groups = [module.blog_sg.security_group_id]
 
-  listeners = {
-    http = {
+  target_groups = [
+    {
+   
+      name_prefix = "blog-"
+      backend_protocol    = "HTTP"
+      backend_port        = 80
+
+      my_targets ={
+        target_type = "instance"
+        target_id   = aws_instance.blog.id
+        port  = 80
+        }
+
+      
+    }
+  ]
+
+  listeners = [{
       port     = 80
       protocol = "HTTP"
-
-      default_action = {
-        type = "forward"
-        target_group_key = "ex-instance"
-      }
-    }
-  }
-
-  target_groups = {
-    ex-instance = {
-      name_prefix = "blog-"
-      protocol    = "HTTP"
-      port        = 80
-      target_type = "instance"
-    }
-  }
+      target_group_index = 0
+    
+  }]
+  
 
   tags = {
-    Environment = "Dev"
-    Project     = "Example"
+    Environment = "Dev"    
   }
 }
 
